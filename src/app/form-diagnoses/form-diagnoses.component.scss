@@ -1,0 +1,18 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  margin: 10px auto;
+  width: 600px;
+  .diagnos {
+    display: flex;
+    justify-content: space-between;
+  }
+  .diagnos__field {
+    width: 48%;
+  }
+  .btn {
+    width: 50%;
+    margin-bottom: 10px;
+  }
+}

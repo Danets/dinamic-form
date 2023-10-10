@@ -1,0 +1,63 @@
+<form class="form" [formGroup]="form">
+  <mat-form-field appearance="outline">
+    <mat-label>Choose a date</mat-label>
+    <input
+      matInput
+      [matDatepicker]="picker"
+      [matDatepickerFilter]="filterDate"
+      formControlName="picker"
+    />
+    <mat-hint>MM/DD/YYYY</mat-hint>
+    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+
+  <ng-container formArrayName="conditions">
+    <ng-container *ngFor="let block of conditions.controls; let i = index">
+      <div class="diagnos" [formGroup]="block">
+        <mat-form-field appearance="outline" class="diagnos__field">
+          <mat-select formControlName="diagnos">
+            <mat-option
+              *ngFor="let diagnos of diagnoses$ | async"
+              [value]="diagnos"
+            >
+              {{ diagnos.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="diagnos__field">
+          <input
+            matInput
+            type="text"
+            formControlName="notes"
+            placeholder="коментар"
+          />
+        </mat-form-field>
+      </div>
+    </ng-container>
+  </ng-container>
+
+  <button
+    class="btn"
+    mat-raised-button
+    color="primary"
+    type="submit"
+    (click)="onAddDiagnos()"
+  >
+    + Додати ще
+  </button>
+
+  <button
+    mat-raised-button
+    color="primary"
+    type="submit"
+    [disabled]="form.invalid"
+    (click)="onSubmit(form)"
+  >
+    Сформувати JSON
+  </button>
+  <div>
+    <pre>{{ formJSON | json }}</pre>
+  </div>
+</form>
