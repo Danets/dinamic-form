@@ -10,7 +10,7 @@ import { Observable } from 'rxjs';
 })
 export class FormDiagnosesComponent implements OnInit {
   filterDate = (d: Date | null): boolean => {
-    return d >= new Date();
+    return d > new Date();
   };
 
   form: FormGroup;
@@ -51,40 +51,39 @@ export class FormDiagnosesComponent implements OnInit {
   }
 
   onSubmit(form: any) {
-    console.log('Form: ', form.value);
+    const arrConditions = form.value.conditions.map((condition) => ({
+      id: 'f8525994-03ec-446e-83bf-4208c2f8aee3',
+      context: {
+        identifier: {
+          type: {
+            coding: [
+              {
+                system: 'eHealth/resources',
+                code: 'encounter',
+              },
+            ],
+          },
+          value: condition.diagnos.id,
+        },
+      },
+      code: {
+        coding: [
+          {
+            system: 'eHealth/ICPC2/condition_codes',
+            code: condition.diagnos.code,
+          },
+        ],
+      },
+      notes: condition.notes,
+      onset_date: form.value.picker,
+    }));
+
     this.formJSON = {
       encounter: {
         date: form.value.picker,
       },
       conditions: Object.values(form.value.conditions[0].diagnos).length
-        ? [
-            {
-              id: 'f8525994-03ec-446e-83bf-4208c2f8aee3',
-              context: {
-                identifier: {
-                  type: {
-                    coding: [
-                      {
-                        system: 'eHealth/resources',
-                        code: 'encounter',
-                      },
-                    ],
-                  },
-                  value: form.value.conditions[0].diagnos.id,
-                },
-              },
-              code: {
-                coding: [
-                  {
-                    system: 'eHealth/ICPC2/condition_codes',
-                    code: form.value.conditions[0].diagnos.code,
-                  },
-                ],
-              },
-              notes: form.value.conditions[0].notes,
-              onset_date: form.value.picker,
-            },
-          ]
+        ? arrConditions
         : [],
     };
   }
