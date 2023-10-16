@@ -18,7 +18,7 @@
         <mat-form-field appearance="outline" class="diagnos__field">
           <mat-select formControlName="diagnos">
             <mat-option
-              *ngFor="let diagnos of diagnoses$ | async"
+              *ngFor="let diagnos of diagnoses$ | async; trackBy: diagnos?.id"
               [value]="diagnos"
             >
               {{ diagnos.name }}
