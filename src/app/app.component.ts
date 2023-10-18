@@ -1,12 +1,12 @@
-import { HttpClientModule } from '@angular/common/http';
 import { Component } from '@angular/core';
-import { FormDiagnosesComponent } from './form-diagnoses/form-diagnoses.component';
+import { NavigationComponent } from './components/navigation/navigation.component';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [FormDiagnosesComponent],
-  template: `<app-form-diagnoses></app-form-diagnoses>`,
+  imports: [NavigationComponent, RouterModule],
+  templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {

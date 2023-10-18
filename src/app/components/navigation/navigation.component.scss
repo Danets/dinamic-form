@@ -1,0 +1,18 @@
+.menu {
+  padding: 10px 15px 10px 0px;
+  border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+.menu__list {
+  display: flex;
+  column-gap: 56px;
+  row-gap: 10px;
+  flex-wrap: wrap;
+}
+.menu__link {
+  color: rgba(18, 18, 18, 0.4);
+  font-weight: 500;
+}
+.menu__link:hover {
+  text-decoration: underline;
+}
