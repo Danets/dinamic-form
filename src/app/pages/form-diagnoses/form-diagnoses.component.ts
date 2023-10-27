@@ -73,8 +73,15 @@ export class FormDiagnosesComponent implements OnInit {
     return this.form.controls['conditions'] as FormArray;
   }
 
-  onAddDiagnos() {
-    this.conditions.push(
+  onAddDiagnos(): void {
+    // this.conditions.push(
+    //   new FormGroup({
+    //     diagnos: new FormControl(''),
+    //     notes: new FormControl(''),
+    //   })
+    // );
+    this.conditions.insert(
+      0,
       new FormGroup({
         diagnos: new FormControl(''),
         notes: new FormControl(''),
@@ -82,8 +89,12 @@ export class FormDiagnosesComponent implements OnInit {
     );
   }
 
-  onSubmit(form: any) {
-    const arrConditions = form.value.conditions.map((condition) => ({
+  onRemoveDiagnos(idx: number): void {
+    this.conditions.removeAt(idx);
+  }
+
+  onSubmit(): void {
+    const arrConditions = this.form.value.conditions.map((condition) => ({
       id: 'f8525994-03ec-446e-83bf-4208c2f8aee3',
       context: {
         identifier: {
@@ -107,14 +118,14 @@ export class FormDiagnosesComponent implements OnInit {
         ],
       },
       notes: condition.notes,
-      onset_date: form.value.picker,
+      onset_date: this.form.value.picker,
     }));
 
     this.formJSON = {
       encounter: {
-        date: form.value.picker,
+        date: this.form.value.picker,
       },
-      conditions: Object.values(form.value.conditions[0].diagnos).length
+      conditions: Object.values(this.form.value.conditions[0].diagnos).length
         ? arrConditions
         : [],
     };

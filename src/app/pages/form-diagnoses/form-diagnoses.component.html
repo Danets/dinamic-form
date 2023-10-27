@@ -19,7 +19,7 @@
           <mat-select formControlName="diagnos">
             <mat-option
               *ngFor="let diagnos of diagnoses$ | async; trackBy: diagnos?.id"
-              [value]="diagnos"
+              [value]="diagnos.name"
             >
               {{ diagnos.name }}
             </mat-option>
@@ -34,6 +34,15 @@
             placeholder="коментар"
           />
         </mat-form-field>
+
+        <button
+          class="btn"
+          mat-raised-button
+          color="accent"
+          (click)="onRemoveDiagnos(i)"
+        >
+          - Видалити
+        </button>
       </div>
     </ng-container>
   </ng-container>
@@ -42,7 +51,6 @@
     class="btn"
     mat-raised-button
     color="primary"
-    type="submit"
     (click)="onAddDiagnos()"
   >
     + Додати ще
@@ -53,7 +61,7 @@
     color="primary"
     type="submit"
     [disabled]="form.invalid"
-    (click)="onSubmit(form)"
+    (click)="onSubmit()"
   >
     Сформувати JSON
   </button>

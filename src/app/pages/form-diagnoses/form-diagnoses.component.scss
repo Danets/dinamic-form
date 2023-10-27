@@ -7,9 +7,13 @@
   .diagnos {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    .btn {
+      width: 15%;
+    }
   }
   .diagnos__field {
-    width: 48%;
+    width: 40%;
   }
   .btn {
     width: 50%;

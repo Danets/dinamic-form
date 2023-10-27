@@ -22,7 +22,8 @@ export const routes: Routes = [
   },
   {
     path: 'about',
-    component: AboutComponent,
+    loadComponent: async () =>
+      (await import('./pages/about/about.component')).AboutComponent,
   },
   {
     path: '**',
