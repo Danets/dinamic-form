@@ -1,0 +1,12 @@
+<input
+  type="text"
+  [formControl]="search"
+  (input)="onSearch()"
+  placeholder="Search"
+/>
+
+<ng-container *ngIf="result$ | async as result">
+  <div>
+    {{ result }}
+  </div>
+</ng-container>

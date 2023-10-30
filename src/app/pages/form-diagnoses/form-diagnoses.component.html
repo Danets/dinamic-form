@@ -17,6 +17,7 @@
       <div class="diagnos" [formGroup]="block">
         <mat-form-field appearance="outline" class="diagnos__field">
           <mat-select formControlName="diagnos">
+            <mat-option value="" disabled>Select Diagnos</mat-option>
             <mat-option
               *ngFor="let diagnos of diagnoses$ | async; trackBy: diagnos?.id"
               [value]="diagnos.name"
