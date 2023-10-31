@@ -3,11 +3,12 @@ import {
   FormArray,
   FormControl,
   FormGroup,
+  FormRecord,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 import { ApiService } from '../../api.service';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -17,6 +18,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-form-diagnoses',
@@ -32,6 +35,8 @@ import { MatIconModule } from '@angular/material/icon';
     MatSelectModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatRadioModule,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './form-diagnoses.component.html',
   styleUrls: ['./form-diagnoses.component.scss'],
@@ -43,25 +48,39 @@ export class FormDiagnosesComponent implements OnInit {
 
   form: FormGroup;
   diagnoses$: Observable<any>;
+  doctors$!: Observable<string[]>;
   formJSON;
 
   constructor(public apiService: ApiService) {}
 
   ngOnInit(): void {
     this.initForm();
-    // this.diagnoses$ = this.apiService.getDiagnoses();
     this.diagnoses$ = this.apiService.data$;
+    this.doctors$ = this.apiService.doctors$.pipe(
+      tap((doctors) => this.buildDoctors(doctors))
+    );
   }
 
   private initForm() {
     this.form = new FormGroup({
       picker: new FormControl(''),
+      doctors: new FormRecord<FormControl<boolean>>({}),
+      isDiagnosExist: new FormControl('diagnosExist'),
       conditions: new FormArray([
         new FormGroup({
           diagnos: new FormControl(''),
           notes: new FormControl(''),
         }),
       ]),
+    });
+  }
+
+  private buildDoctors(doctors: string[]) {
+    doctors.forEach((doctor) => {
+      (this.form.get('doctors') as FormGroup).addControl(
+        doctor,
+        new FormControl(false, { nonNullable: true })
+      );
     });
   }
 

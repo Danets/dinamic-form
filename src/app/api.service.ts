@@ -4,7 +4,7 @@ import {
   HttpHeaders,
 } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { catchError, Observable, of, throwError } from 'rxjs';
+import { catchError, delay, Observable, of, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -14,6 +14,8 @@ export class ApiService {
     ' https://global.lakmus.org/Dictionaries/icpc2?IsPublic=true';
 
   private http = inject(HttpClient);
+
+  doctors$ = of(['John', 'Bob', 'Carl', 'Eleonora']).pipe(delay(3000));
 
   data$ = of([
     {

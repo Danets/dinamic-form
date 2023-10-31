@@ -12,7 +12,29 @@
     <mat-datepicker #picker></mat-datepicker>
   </mat-form-field>
 
-  <ng-container formArrayName="conditions">
+  <mat-radio-group
+    aria-label="Select an option"
+    formControlName="isDiagnosExist"
+  >
+    <mat-radio-button value="diagnosExist">Diagnos Exist</mat-radio-button>
+    <mat-radio-button value="diagnosNope">Nope Diagnos</mat-radio-button>
+  </mat-radio-group>
+
+  <fieldset class="doctor" formGroupName="doctors">
+    <legend>Choose Doctors</legend>
+    <ng-container *ngIf="doctors$ | async as doctors; else loading">
+      <ng-container *ngFor="let doctor of doctors">
+        <mat-checkbox [formControlName]="doctor">
+          {{ doctor }}
+        </mat-checkbox>
+      </ng-container>
+    </ng-container>
+  </fieldset>
+
+  <ng-container
+    formArrayName="conditions"
+    *ngIf="form.get('isDiagnosExist')?.value === 'diagnosExist'"
+  >
     <ng-container *ngFor="let block of conditions.controls; let i = index">
       <div class="diagnos" [formGroup]="block">
         <mat-form-field appearance="outline" class="diagnos__field">
@@ -32,7 +54,7 @@
             matInput
             type="text"
             formControlName="notes"
-            placeholder="коментар"
+            placeholder="Notes"
           />
         </mat-form-field>
 
@@ -42,7 +64,7 @@
           color="accent"
           (click)="onRemoveDiagnos(i)"
         >
-          - Видалити
+          Remove
         </button>
       </div>
     </ng-container>
@@ -54,7 +76,7 @@
     color="primary"
     (click)="onAddDiagnos()"
   >
-    + Додати ще
+    + Add Diagnos
   </button>
 
   <button
@@ -64,9 +86,11 @@
     [disabled]="form.invalid"
     (click)="onSubmit()"
   >
-    Сформувати JSON
+    Prepare JSON
   </button>
   <div>
     <pre>{{ formJSON | json }}</pre>
   </div>
 </form>
+
+<ng-template #loading><mat-spinner class="spiner"></mat-spinner></ng-template>
