@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import {
   FormArray,
+  FormBuilder,
   FormControl,
   FormGroup,
   FormRecord,
@@ -8,7 +9,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { ApiService } from '../../api.service';
-import { Observable, tap } from 'rxjs';
+import { Observable, distinctUntilChanged, startWith, take, tap } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -51,25 +52,27 @@ export class FormDiagnosesComponent implements OnInit {
   doctors$!: Observable<string[]>;
   formJSON;
 
-  constructor(public apiService: ApiService) {}
+  private apiService = inject(ApiService);
+  private fb = inject(FormBuilder);
 
   ngOnInit(): void {
     this.initForm();
+    this.validateNotes();
     this.diagnoses$ = this.apiService.data$;
     this.doctors$ = this.apiService.doctors$.pipe(
-      tap((doctors) => this.buildDoctors(doctors))
+      tap((doctors: string[]) => this.buildDoctors(doctors))
     );
   }
 
   private initForm() {
-    this.form = new FormGroup({
-      picker: new FormControl(''),
-      doctors: new FormRecord<FormControl<boolean>>({}),
-      isDiagnosExist: new FormControl('diagnosExist'),
-      conditions: new FormArray([
-        new FormGroup({
-          diagnos: new FormControl(''),
-          notes: new FormControl(''),
+    this.form = this.fb.group({
+      picker: this.fb.control(''),
+      doctors: this.fb.record<FormControl<boolean>>({}),
+      isDiagnosExist: this.fb.control('diagnosExist'),
+      conditions: this.fb.array([
+        this.fb.group({
+          diagnos: this.fb.control(''),
+          notes: this.fb.control(''),
         }),
       ]),
     });
@@ -84,28 +87,42 @@ export class FormDiagnosesComponent implements OnInit {
     });
   }
 
-  // trackByDiagnosId(index: number, diagnos: any): number {
-  //   return diagnos.id;
-  // }
+  private validateNotes() {
+    this.conditions.valueChanges.subscribe((conditions: any[]) => {
+      conditions.forEach((condition, index) => {
+        const notes = this.conditions.at(index).get('notes');
+        if (condition.diagnos) {
+          notes?.markAsDirty();
+          notes?.setValidators([Validators.required]);
+        } else {
+          notes?.clearValidators();
+        }
+        notes?.updateValueAndValidity({ emitEvent: false });
+      });
+    });
+  }
+  /**
+   * In this method occured RangeError: Maximum call stack size exceeded due to called updateValueAndValidity() without flag { emitEvent: false }
+   */
 
   get conditions(): FormArray {
     return this.form.controls['conditions'] as FormArray;
   }
 
   onAddDiagnos(): void {
-    // this.conditions.push(
-    //   new FormGroup({
-    //     diagnos: new FormControl(''),
-    //     notes: new FormControl(''),
-    //   })
-    // );
-    this.conditions.insert(
-      0,
+    this.conditions.push(
       new FormGroup({
         diagnos: new FormControl(''),
         notes: new FormControl(''),
       })
     );
+    // this.conditions.insert(
+    //   0,
+    //   new FormGroup({
+    //     diagnos: new FormControl(''),
+    //     notes: new FormControl(''),
+    //   })
+    // );
   }
 
   onRemoveDiagnos(idx: number): void {

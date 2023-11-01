@@ -56,6 +56,11 @@
             formControlName="notes"
             placeholder="Notes"
           />
+          <ng-container *ngIf="conditions.at(i).get('notes') as notes">
+            <mat-error *ngIf="notes.dirty && notes.hasError('required')">
+              Notes are <strong>required</strong>
+            </mat-error>
+          </ng-container>
         </mat-form-field>
 
         <button
