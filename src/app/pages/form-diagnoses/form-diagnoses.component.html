@@ -31,6 +31,34 @@
     </ng-container>
   </fieldset>
 
+  <fieldset class="passport" formGroupName="passportGroupe">
+    <legend>Passport Data</legend>
+    <mat-form-field appearance="outline" class="years__field">
+      <mat-select formControlName="years">
+        <mat-option *ngFor="let year of years" [value]="year">
+          {{ year }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="passport__field">
+      <input
+        matInput
+        type="text"
+        formControlName="passport"
+        placeholder="Fill in Passport Data"
+      />
+      <ng-container *ngIf="passportGroupe.controls.passport as passport">
+        <mat-error *ngIf="passport.dirty && passport.hasError('required')">
+          Passport is <strong>required</strong>
+        </mat-error>
+        <mat-error *ngIf="passport.dirty && passport.hasError('pattern')">
+          Passport data must have!
+        </mat-error>
+      </ng-container>
+    </mat-form-field>
+  </fieldset>
+
   <ng-container
     formArrayName="conditions"
     *ngIf="form.get('isDiagnosExist')?.value === 'diagnosExist'"
@@ -39,7 +67,7 @@
       <div class="diagnos" [formGroup]="block">
         <mat-form-field appearance="outline" class="diagnos__field">
           <mat-select formControlName="diagnos">
-            <mat-option value="" disabled>Select Diagnos</mat-option>
+            <mat-option value="">Select Diagnos</mat-option>
             <mat-option
               *ngFor="let diagnos of diagnoses$ | async; trackBy: diagnos?.id"
               [value]="diagnos.name"

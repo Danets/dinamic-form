@@ -43,21 +43,23 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   styleUrls: ['./form-diagnoses.component.scss'],
 })
 export class FormDiagnosesComponent implements OnInit {
-  filterDate = (d: Date | null): boolean => {
-    return d > new Date();
-  };
+  private apiService = inject(ApiService);
+  private fb = inject(FormBuilder);
 
   form: FormGroup;
   diagnoses$: Observable<any>;
   doctors$!: Observable<string[]>;
   formJSON;
+  years = this.getYears();
 
-  private apiService = inject(ApiService);
-  private fb = inject(FormBuilder);
+  filterDate = (d: Date | null): boolean => {
+    return d > new Date();
+  };
 
   ngOnInit(): void {
     this.initForm();
     this.validateNotes();
+    this.validatePassport();
     this.diagnoses$ = this.apiService.data$;
     this.doctors$ = this.apiService.doctors$.pipe(
       tap((doctors: string[]) => this.buildDoctors(doctors))
@@ -68,6 +70,12 @@ export class FormDiagnosesComponent implements OnInit {
     this.form = this.fb.group({
       picker: this.fb.control(''),
       doctors: this.fb.record<FormControl<boolean>>({}),
+      passportGroupe: this.fb.group({
+        years: this.fb.nonNullable.control(this.years[this.years.length - 1]),
+        passport: this.fb.control('', [
+          Validators.pattern(/^[A-Z]{2}[0-9]{6}$/),
+        ]),
+      }),
       isDiagnosExist: this.fb.control('diagnosExist'),
       conditions: this.fb.array([
         this.fb.group({
@@ -76,6 +84,13 @@ export class FormDiagnosesComponent implements OnInit {
         }),
       ]),
     });
+  }
+
+  private getYears() {
+    const now = new Date().getUTCFullYear();
+    return Array(now - (now - 40))
+      .fill('')
+      .map((_, idx) => now - idx);
   }
 
   private buildDoctors(doctors: string[]) {
@@ -87,12 +102,36 @@ export class FormDiagnosesComponent implements OnInit {
     });
   }
 
+  private validatePassport() {
+    this.passportGroupe.controls.years.valueChanges
+      .pipe(
+        tap(() => {
+          this.passportGroupe.controls.passport.markAsDirty();
+          this.passportGroupe.controls.passport.markAsTouched();
+        }),
+        startWith(this.passportGroupe.controls.years.value)
+      )
+      .subscribe((years) => {
+        const passport = this.passportGroupe.controls.passport;
+        this.isAdult(years)
+          ? passport.addValidators(Validators.required)
+          : passport.removeValidators(Validators.required);
+        passport.updateValueAndValidity();
+      });
+  }
+
+  private isAdult(yearOfBirth: number): boolean {
+    const currentYear = new Date().getFullYear();
+    return currentYear - yearOfBirth >= 18;
+  }
+
   private validateNotes() {
     this.conditions.valueChanges.subscribe((conditions: any[]) => {
       conditions.forEach((condition, index) => {
         const notes = this.conditions.at(index).get('notes');
         if (condition.diagnos) {
           notes?.markAsDirty();
+          notes?.markAsTouched();
           notes?.setValidators([Validators.required]);
         } else {
           notes?.clearValidators();
@@ -107,6 +146,10 @@ export class FormDiagnosesComponent implements OnInit {
 
   get conditions(): FormArray {
     return this.form.controls['conditions'] as FormArray;
+  }
+
+  get passportGroupe(): FormGroup {
+    return this.form.controls.passportGroupe as FormGroup;
   }
 
   onAddDiagnos(): void {
