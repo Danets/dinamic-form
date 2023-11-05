@@ -12,6 +12,51 @@
     <mat-datepicker #picker></mat-datepicker>
   </mat-form-field>
 
+  <fieldset class="password" formGroupName="passwordGroupe">
+    <legend>Passport Data</legend>
+    <mat-form-field appearance="outline">
+      <input
+        matInput
+        type="password"
+        formControlName="password"
+        placeholder="Password"
+      />
+      <ng-container *ngIf="passwordGroupe.controls.password as password">
+        <mat-error *ngIf="password.dirty && password.hasError('required')">
+          Passport is required
+        </mat-error>
+        <mat-error *ngIf="password.dirty && password.hasError('minlength')">
+          Passport has
+          <strong>{{ password.getError("minlength").actualLength }}</strong>
+          symbols but has to have
+          <strong>{{ password.getError("minlength").requiredLength }}</strong>
+          symbols
+        </mat-error>
+      </ng-container>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <input
+        matInput
+        type="password"
+        formControlName="passwordConfirmed"
+        placeholder="Confirm Password"
+      />
+      <ng-container
+        *ngIf="passwordGroupe.controls.passwordConfirmed as passwordConfirmed"
+      >
+        <mat-error
+          *ngIf="
+            passwordConfirmed.dirty &&
+            passwordConfirmed.hasError('passwordMatching')
+          "
+        >
+          Confirm Password is not matched
+        </mat-error>
+      </ng-container>
+    </mat-form-field>
+  </fieldset>
+
   <mat-radio-group
     aria-label="Select an option"
     formControlName="isDiagnosExist"

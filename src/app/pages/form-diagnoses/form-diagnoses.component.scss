@@ -5,11 +5,12 @@
   margin: 10px auto;
   width: 600px;
   .diagnos,
-  .passport {
+  .passport,
+  .password {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 4px;
+    margin-bottom: 10px;
     .btn {
       width: 15%;
       padding: 20px;

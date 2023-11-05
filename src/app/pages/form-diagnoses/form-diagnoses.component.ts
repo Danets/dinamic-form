@@ -21,6 +21,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { passwordMatching } from 'src/app/validators/password-matching.validator';
 
 @Component({
   selector: 'app-form-diagnoses',
@@ -69,6 +70,16 @@ export class FormDiagnosesComponent implements OnInit {
   private initForm() {
     this.form = this.fb.group({
       picker: this.fb.control(''),
+      passwordGroupe: this.fb.group(
+        {
+          password: this.fb.control('', [
+            Validators.required,
+            Validators.minLength(6),
+          ]),
+          passwordConfirmed: this.fb.control(''),
+        },
+        { validators: passwordMatching }
+      ),
       doctors: this.fb.record<FormControl<boolean>>({}),
       passportGroupe: this.fb.group({
         years: this.fb.nonNullable.control(this.years[this.years.length - 1]),
@@ -150,6 +161,10 @@ export class FormDiagnosesComponent implements OnInit {
 
   get passportGroupe(): FormGroup {
     return this.form.controls.passportGroupe as FormGroup;
+  }
+
+  get passwordGroupe(): FormGroup {
+    return this.form.controls.passwordGroupe as FormGroup;
   }
 
   onAddDiagnos(): void {
