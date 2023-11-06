@@ -1,4 +1,11 @@
-import { Component, OnInit, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
+  inject,
+} from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -9,7 +16,17 @@ import {
   Validators,
 } from '@angular/forms';
 import { ApiService } from '../../api.service';
-import { Observable, distinctUntilChanged, startWith, take, tap } from 'rxjs';
+import {
+  Observable,
+  Subject,
+  bufferCount,
+  distinctUntilChanged,
+  filter,
+  startWith,
+  take,
+  takeUntil,
+  tap,
+} from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -22,6 +39,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { passwordMatching } from 'src/app/validators/password-matching.validator';
+import { NicknameAsyncValidator } from 'src/app/validators/nickname.async.validator';
 
 @Component({
   selector: 'app-form-diagnoses',
@@ -42,10 +60,14 @@ import { passwordMatching } from 'src/app/validators/password-matching.validator
   ],
   templateUrl: './form-diagnoses.component.html',
   styleUrls: ['./form-diagnoses.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FormDiagnosesComponent implements OnInit {
+export class FormDiagnosesComponent implements OnInit, OnDestroy {
   private apiService = inject(ApiService);
   private fb = inject(FormBuilder);
+  private cdr = inject(ChangeDetectorRef);
+  private nicknameAsyncValidator = inject(NicknameAsyncValidator);
+  private destroyed$ = new Subject<void>();
 
   form: FormGroup;
   diagnoses$: Observable<any>;
@@ -61,33 +83,50 @@ export class FormDiagnosesComponent implements OnInit {
     this.initForm();
     this.validateNotes();
     this.validatePassport();
+    this.changeStatusForm();
     this.diagnoses$ = this.apiService.data$;
     this.doctors$ = this.apiService.doctors$.pipe(
       tap((doctors: string[]) => this.buildDoctors(doctors))
     );
   }
 
+  ngOnDestroy(): void {
+    this.destroyed$.next();
+    this.destroyed$.complete();
+  }
+
   private initForm() {
     this.form = this.fb.group({
-      picker: this.fb.control(''),
+      picker: [''],
+      nickName: [
+        '',
+        {
+          validators: [
+            Validators.required,
+            Validators.minLength(4),
+            Validators.pattern(/^[\w.]+$/),
+          ],
+          asyncValidators: [
+            this.nicknameAsyncValidator.validate.bind(
+              this.nicknameAsyncValidator
+            ),
+          ],
+          updateOn: 'blur',
+        },
+      ],
       passwordGroupe: this.fb.group(
         {
-          password: this.fb.control('', [
-            Validators.required,
-            Validators.minLength(6),
-          ]),
-          passwordConfirmed: this.fb.control(''),
+          password: ['', [Validators.required, Validators.minLength(6)]],
+          passwordConfirmed: [''],
         },
         { validators: passwordMatching }
       ),
       doctors: this.fb.record<FormControl<boolean>>({}),
       passportGroupe: this.fb.group({
         years: this.fb.nonNullable.control(this.years[this.years.length - 1]),
-        passport: this.fb.control('', [
-          Validators.pattern(/^[A-Z]{2}[0-9]{6}$/),
-        ]),
+        passport: ['', [Validators.pattern(/^[A-Z]{2}[0-9]{6}$/)]],
       }),
-      isDiagnosExist: this.fb.control('diagnosExist'),
+      isDiagnosExist: ['diagnosExist'],
       conditions: this.fb.array([
         this.fb.group({
           diagnos: this.fb.control(''),
@@ -113,6 +152,16 @@ export class FormDiagnosesComponent implements OnInit {
     });
   }
 
+  private changeStatusForm() {
+    this.form.statusChanges
+      .pipe(
+        bufferCount(2, 1),
+        filter(([prevState]) => prevState === 'PENDING'),
+        takeUntil(this.destroyed$)
+      )
+      .subscribe(() => this.cdr.markForCheck());
+  }
+
   private validatePassport() {
     this.passportGroupe.controls.years.valueChanges
       .pipe(
@@ -120,7 +169,8 @@ export class FormDiagnosesComponent implements OnInit {
           this.passportGroupe.controls.passport.markAsDirty();
           this.passportGroupe.controls.passport.markAsTouched();
         }),
-        startWith(this.passportGroupe.controls.years.value)
+        startWith(this.passportGroupe.controls.years.value),
+        takeUntil(this.destroyed$)
       )
       .subscribe((years) => {
         const passport = this.passportGroupe.controls.passport;
@@ -137,19 +187,21 @@ export class FormDiagnosesComponent implements OnInit {
   }
 
   private validateNotes() {
-    this.conditions.valueChanges.subscribe((conditions: any[]) => {
-      conditions.forEach((condition, index) => {
-        const notes = this.conditions.at(index).get('notes');
-        if (condition.diagnos) {
-          notes?.markAsDirty();
-          notes?.markAsTouched();
-          notes?.setValidators([Validators.required]);
-        } else {
-          notes?.clearValidators();
-        }
-        notes?.updateValueAndValidity({ emitEvent: false });
+    this.conditions.valueChanges
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe((conditions: any[]) => {
+        conditions.forEach((condition, index) => {
+          const notes = this.conditions.at(index).get('notes');
+          if (condition.diagnos) {
+            notes?.markAsDirty();
+            notes?.markAsTouched();
+            notes?.setValidators([Validators.required]);
+          } else {
+            notes?.clearValidators();
+          }
+          notes?.updateValueAndValidity({ emitEvent: false });
+        });
       });
-    });
   }
   /**
    * In this method occured RangeError: Maximum call stack size exceeded due to called updateValueAndValidity() without flag { emitEvent: false }

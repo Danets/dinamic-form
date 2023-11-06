@@ -12,8 +12,25 @@
     <mat-datepicker #picker></mat-datepicker>
   </mat-form-field>
 
+  <mat-form-field appearance="outline">
+    <mat-label>Put NickName</mat-label>
+    <input matInput formControlName="nickName" />
+    <ng-container *ngIf="form.controls.nickName as nickname">
+      <mat-error *ngIf="nickname.dirty && nickname.hasError('required')">
+        NickName is <strong>required</strong>
+      </mat-error>
+      <mat-error *ngIf="nickname.dirty && nickname.hasError('minlength')">
+        Nickname gotta has {{ nickname.getError("minlength").requiredLength }}
+      </mat-error>
+      <mat-error *ngIf="nickname.pending"> Checking nickname... </mat-error>
+      <mat-error *ngIf="nickname.dirty && nickname.hasError('uniqueName')">
+        NickName is not unique!
+      </mat-error>
+    </ng-container>
+  </mat-form-field>
+
   <fieldset class="password" formGroupName="passwordGroupe">
-    <legend>Passport Data</legend>
+    <legend>Password</legend>
     <mat-form-field appearance="outline">
       <input
         matInput
@@ -23,10 +40,10 @@
       />
       <ng-container *ngIf="passwordGroupe.controls.password as password">
         <mat-error *ngIf="password.dirty && password.hasError('required')">
-          Passport is required
+          Password is required
         </mat-error>
         <mat-error *ngIf="password.dirty && password.hasError('minlength')">
-          Passport has
+          Password has
           <strong>{{ password.getError("minlength").actualLength }}</strong>
           symbols but has to have
           <strong>{{ password.getError("minlength").requiredLength }}</strong>
@@ -161,7 +178,7 @@
     mat-raised-button
     color="primary"
     type="submit"
-    [disabled]="form.invalid"
+    [disabled]="form.invalid || form.pending"
     (click)="onSubmit()"
   >
     Prepare JSON
