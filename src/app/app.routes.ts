@@ -21,6 +21,12 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'select',
+    loadComponent: async () =>
+      (await import('./pages/select-page/select-page.component'))
+        .SelectPageComponent,
+  },
+  {
     path: 'about',
     loadComponent: async () =>
       (await import('./pages/about/about.component')).AboutComponent,

@@ -64,3 +64,7 @@ button[disabled] {
   border-color: rgba(0, 0, 0, 0.1);
   pointer-events: none;
 }
+
+select {
+  width: 100%;
+}
