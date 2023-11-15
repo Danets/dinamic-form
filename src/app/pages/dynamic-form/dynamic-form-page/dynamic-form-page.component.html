@@ -1,0 +1,43 @@
+<div class="action-buttons">
+  <button
+    (click)="formLoadingTrigger.next('user')"
+    mat-raised-button
+    color="primary"
+  >
+    Load User Form
+  </button>
+  <button
+    (click)="formLoadingTrigger.next('company')"
+    mat-raised-button
+    color="primary"
+  >
+    Load Company Form
+  </button>
+</div>
+<div *ngIf="formConfig$ | async as formConfig" class="dynamic-form-container">
+  <form [formGroup]="formConfig.form" (ngSubmit)="onSubmit(formConfig.form)">
+    <h3 class="form-heading">{{ formConfig.config.description }}</h3>
+    <mat-form-field
+      appearance="outline"
+      *ngFor="
+        let control of formConfig.config.controls | keyvalue : comparatorFn
+      "
+    >
+      <ng-container
+        [ngComponentOutlet]="
+          controlResolver.resolve(control.value.controlType) | async
+        "
+        [ngComponentOutletInjector]="
+          control.key | controlInjector : control.value
+        "
+      ></ng-container>
+    </mat-form-field>
+    <button
+      mat-raised-button
+      color="primary"
+      [disabled]="formConfig.form.invalid"
+    >
+      Save
+    </button>
+  </form>
+</div>

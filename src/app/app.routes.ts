@@ -27,6 +27,19 @@ export const routes: Routes = [
         .SelectPageComponent,
   },
   {
+    path: 'dynamicform',
+    loadComponent: () =>
+      import(
+        './pages/dynamic-form/dynamic-form-page/dynamic-form-page.component'
+      ).then((m) => m.DynamicFormPageComponent),
+    // loadComponent: async () =>
+    //   (
+    //     await import(
+    //       './pages/dynamic-form/dynamic-form-page/dynamic-form-page.component'
+    //     )
+    //   ).DynamicFormPageComponent,
+  },
+  {
     path: 'about',
     loadComponent: async () =>
       (await import('./pages/about/about.component')).AboutComponent,
