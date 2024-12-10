@@ -104,7 +104,7 @@ export class FormDiagnosesComponent implements OnInit, OnDestroy {
           validators: [
             Validators.required,
             Validators.minLength(4),
-            Validators.pattern(/^[\w.]+$/),
+            Validators.pattern(/^[\w.]+$/), //Validators.pattern(/^[a-zA-Z0-9_.]+$/),
           ],
           asyncValidators: [
             this.nicknameAsyncValidator.validate.bind(
@@ -138,7 +138,7 @@ export class FormDiagnosesComponent implements OnInit, OnDestroy {
 
   private getYears() {
     const now = new Date().getUTCFullYear();
-    return Array(now - (now - 40))
+    return Array(now - (now - 43))
       .fill('')
       .map((_, idx) => now - idx);
   }

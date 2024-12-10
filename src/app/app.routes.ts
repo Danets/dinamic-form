@@ -2,12 +2,20 @@ import { Routes } from '@angular/router';
 import { HomeComponent } from './pages/home/home.component';
 import { FormDiagnosesComponent } from './pages/form-diagnoses/form-diagnoses.component';
 import { AboutComponent } from './pages/about/about.component';
+import { TransactionComponent } from './pages/transaction/transaction.component';
 
 export const routes: Routes = [
   {
     path: '',
     redirectTo: 'home',
     pathMatch: 'full',
+  },
+  {
+    path: 'transaction',
+    loadComponent: () =>
+      import('./pages/transaction/transaction.component').then(
+        (m) => m.TransactionComponent
+      ),
   },
   {
     path: 'home',
