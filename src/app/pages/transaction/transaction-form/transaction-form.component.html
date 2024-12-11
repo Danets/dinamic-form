@@ -2,11 +2,23 @@
   <mat-form-field appearance="outline">
     <mat-label>Transaction Name</mat-label>
     <input matInput formControlName="name" required />
+
+    <ng-container *ngIf="transactionForm.controls.name as name">
+      <mat-error *ngIf="name.touched && name.hasError('required')">
+        name is <strong>required</strong>
+      </mat-error>
+    </ng-container>
   </mat-form-field>
 
   <mat-form-field appearance="outline">
     <mat-label>Amount</mat-label>
     <input matInput formControlName="amount" type="number" required />
+
+    <ng-container *ngIf="transactionForm.controls.amount as amount">
+      <mat-error *ngIf="amount.touched && amount.hasError('required')">
+        amount is <strong>required</strong>
+      </mat-error>
+    </ng-container>
   </mat-form-field>
 
   <div class="form-field mat-mdc-form-field">
@@ -23,12 +35,18 @@
         {{ category }}
       </mat-option>
     </mat-select>
+
+    <ng-container *ngIf="transactionForm.controls.category as category">
+      <mat-error *ngIf="category.touched && category.hasError('required')">
+        category is <strong>required</strong>
+      </mat-error>
+    </ng-container>
   </mat-form-field>
 
   <mat-form-field appearance="outline">
     <mat-label>Date</mat-label>
     <input matInput formControlName="date" [matDatepicker]="date" />
-    <mat-hint>DD/MM/YYYY</mat-hint>
+    <mat-hint>MM/DD/YYYY</mat-hint>
     <mat-datepicker-toggle matIconSuffix [for]="date"></mat-datepicker-toggle>
     <mat-datepicker #date></mat-datepicker>
   </mat-form-field>
@@ -38,6 +56,7 @@
     color="primary"
     type="submit"
     [disabled]="!transactionForm.valid"
+    class="btn-submit"
   >
     Add Transaction
   </button>

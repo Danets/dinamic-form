@@ -18,6 +18,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatButtonModule } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
 
 import { TransactionService } from '../transaction.service';
@@ -34,6 +35,7 @@ import { Transaction } from 'src/app/models/transaction';
     MatSelectModule,
     MatRadioModule,
     MatDatepickerModule,
+    MatButtonModule,
     MatNativeDateModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -60,7 +62,7 @@ export class TransactionFormComponent implements OnInit {
         Validators.required,
         Validators.min(0.01),
       ]),
-      type: this.fb.nonNullable.control('income', Validators.required),
+      type: this.fb.nonNullable.control('expense'),
       category: this.fb.nonNullable.control('', Validators.required),
       date: [new Date().toISOString().slice(0, 10), Validators.required],
     });
@@ -76,10 +78,6 @@ export class TransactionFormComponent implements OnInit {
       };
       this.transactionService.addTransaction(transaction);
       this.formdir.resetForm({});
-      // this.transactionForm.reset({
-      //   type: 'income',
-      //   date: new Date().toISOString().slice(0, 10),
-      // });
     }
   }
 }
