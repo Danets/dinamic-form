@@ -1,0 +1,9 @@
+<div>
+  <mat-list>
+    <mat-list-item *ngFor="let transaction of transactions">
+      <span matListItemTitle>{{ transaction.name }}</span>
+      <span matListItemLine>{{ transaction.amount | currency }}</span>
+      <span matListItemLine>{{ transaction.date | date }}</span>
+    </mat-list-item>
+  </mat-list>
+</div>

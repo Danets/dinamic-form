@@ -28,9 +28,11 @@ import {
 })
 export class SearchComponent {
   search = new FormControl('');
-  result$: Observable<string>;
+
   private searchSubject = new Subject<string>();
   subject$ = this.searchSubject.asObservable();
+
+  result$: Observable<string>;
 
   constructor() {
     this.result$ = this.subject$.pipe(
