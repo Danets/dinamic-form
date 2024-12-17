@@ -2,6 +2,8 @@ import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
+import { Observable } from 'rxjs';
+
 import { Transaction } from 'src/app/models/transaction';
 
 import { MatButtonModule } from '@angular/material/button';
@@ -27,6 +29,5 @@ import { MatListModule } from '@angular/material/list';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TransactionListComponent {
-  @Input()
-  transactions: Transaction[] = [];
+  @Input() transactions$: Observable<Transaction[]>;
 }

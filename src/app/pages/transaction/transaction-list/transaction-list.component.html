@@ -1,5 +1,5 @@
 <div>
-  <mat-list>
+  <mat-list *ngIf="transactions$ | async as transactions">
     <mat-list-item *ngFor="let transaction of transactions">
       <span matListItemTitle>{{ transaction.name }}</span>
       <span matListItemLine>{{ transaction.amount | currency }}</span>

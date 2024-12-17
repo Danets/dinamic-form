@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TransactionFormComponent } from './transaction-form/transaction-form.component';
 import { TransactionListComponent } from './transaction-list/transaction-list.component';
 import { Transaction } from 'src/app/models/transaction';
 import { TransactionService } from './transaction.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-transaction',
@@ -13,15 +14,11 @@ import { TransactionService } from './transaction.service';
   styleUrl: './transaction.component.scss',
 })
 export class TransactionComponent implements OnInit {
-  transactions: Transaction[] = [];
+  transactionService = inject(TransactionService);
 
-  constructor(private transactionService: TransactionService) {}
+  transactions$: Observable<Transaction[]>;
 
   ngOnInit(): void {
-    this.loadTransactions();
-  }
-
-  loadTransactions(): void {
-    this.transactions = this.transactionService.getTransactions();
+    this.transactions$ = this.transactionService.transactionsStream$;
   }
 }
