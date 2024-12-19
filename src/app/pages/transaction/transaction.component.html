@@ -1,2 +1,8 @@
-<app-transaction-list [transactions$]="transactions$"></app-transaction-list>
+<app-transaction-filter
+  (changedFilter)="onChangeFilter($event)"
+  (sorted)="onChangeSort($event)"
+></app-transaction-filter>
 <app-transaction-form></app-transaction-form>
+<app-transaction-list
+  [transactions$]="filteredTransactions$"
+></app-transaction-list>
