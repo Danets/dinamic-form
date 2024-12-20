@@ -3,6 +3,7 @@
   (sorted)="onChangeSort($event)"
 ></app-transaction-filter>
 <app-transaction-form></app-transaction-form>
+<h1>{{ balance$ | async }}</h1>
 <app-transaction-list
   [transactions$]="filteredTransactions$"
 ></app-transaction-list>

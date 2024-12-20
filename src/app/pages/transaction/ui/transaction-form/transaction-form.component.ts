@@ -21,7 +21,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatButtonModule } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
 
-import { TransactionService } from '../transaction.service';
+import { TransactionService } from '../../data-access/transaction.service';
 import { Transaction } from 'src/app/models/transaction';
 
 @Component({

@@ -12,8 +12,22 @@ export class TransactionService {
   private transactions$ = new BehaviorSubject<Transaction[]>([]);
   transactionsStream$ = this.transactions$.asObservable();
 
+  private balanceSubject = new BehaviorSubject<number>(0);
+  balance$ = this.balanceSubject.asObservable();
+
   constructor() {
     this.getTransactions();
+    this.getBalance();
+  }
+
+  private getBalance(): void {
+    const transactions = this.getTransactions();
+    const balance = transactions.reduce((acc, transaction) => {
+      return transaction.type === 'expense'
+        ? acc - transaction.amount
+        : acc + transaction.amount;
+    }, 0);
+    this.balanceSubject.next(balance);
   }
 
   // Get transactions from localStorage
@@ -32,6 +46,7 @@ export class TransactionService {
   saveTransactions(transactions: Transaction[]): void {
     localStorage.setItem(this.storageKey, JSON.stringify(transactions));
     this.transactions$.next(transactions);
+    this.getBalance();
   }
 
   // Add a transaction

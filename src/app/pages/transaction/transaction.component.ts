@@ -3,11 +3,11 @@ import { CommonModule } from '@angular/common';
 import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { TransactionFilterComponent } from './transaction-filter/transaction-filter.component';
-import { TransactionFormComponent } from './transaction-form/transaction-form.component';
-import { TransactionListComponent } from './transaction-list/transaction-list.component';
+import { TransactionFilterComponent } from './ui/transaction-filter/transaction-filter.component';
+import { TransactionFormComponent } from './ui/transaction-form/transaction-form.component';
+import { TransactionListComponent } from './ui/transaction-list/transaction-list.component';
 import { Transaction } from 'src/app/models/transaction';
-import { TransactionService } from './transaction.service';
+import { TransactionService } from './data-access/transaction.service';
 
 @Component({
   selector: 'app-transaction',
@@ -22,17 +22,22 @@ import { TransactionService } from './transaction.service';
   styleUrls: ['./transaction.component.scss'],
 })
 export class TransactionComponent implements OnInit {
+  private filterTypeSubject = new BehaviorSubject<string>('all');
+  private sortBySubject = new BehaviorSubject<string>('date');
+
   private transactionService = inject(TransactionService);
 
   transactions$: Observable<Transaction[]> =
     this.transactionService.transactionsStream$;
 
-  private filterTypeSubject = new BehaviorSubject<string>('all');
-  private sortBySubject = new BehaviorSubject<string>('date');
-
   filteredTransactions$: Observable<Transaction[]>;
+  balance$ = this.transactionService.balance$;
 
   ngOnInit(): void {
+    this.settingTransactions();
+  }
+
+  private settingTransactions() {
     this.filteredTransactions$ = combineLatest([
       this.transactions$,
       this.filterTypeSubject,
@@ -42,14 +47,6 @@ export class TransactionComponent implements OnInit {
         this.filterAndSortTransactions(transactions, filterType, sortBy)
       )
     );
-  }
-
-  onChangeFilter(filterType: string) {
-    this.filterTypeSubject.next(filterType);
-  }
-
-  onChangeSort(sortBy: string) {
-    this.sortBySubject.next(sortBy);
   }
 
   private filterAndSortTransactions(
@@ -71,5 +68,13 @@ export class TransactionComponent implements OnInit {
       }
       return a.amount - b.amount;
     });
+  }
+
+  onChangeFilter(filterType: string): void {
+    this.filterTypeSubject.next(filterType);
+  }
+
+  onChangeSort(sortBy: string): void {
+    this.sortBySubject.next(sortBy);
   }
 }
