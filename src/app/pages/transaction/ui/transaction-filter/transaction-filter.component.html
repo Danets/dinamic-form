@@ -1,18 +1,8 @@
-<div>
-  <mat-radio-group
-    [ngModel]="filterType"
-    (ngModelChange)="onChangeFilter($event)"
-  >
-    <mat-radio-button value="all">All</mat-radio-button>
-    <mat-radio-button value="income">Income</mat-radio-button>
-    <mat-radio-button value="expense">Expense</mat-radio-button>
-  </mat-radio-group>
-
-  <mat-form-field>
-    <mat-label>Sort By</mat-label>
-    <mat-select [ngModel]="sortBy" (ngModelChange)="onChangeSort($event)">
-      <mat-option value="date">Date</mat-option>
-      <mat-option value="amount">Amount</mat-option>
-    </mat-select>
-  </mat-form-field>
-</div>
+<mat-radio-group
+  [ngModel]="filterType"
+  (ngModelChange)="onChangeFilter($event)"
+>
+  <mat-radio-button value="all">All</mat-radio-button>
+  <mat-radio-button value="income">Income</mat-radio-button>
+  <mat-radio-button value="expense">Expense</mat-radio-button>
+</mat-radio-group>

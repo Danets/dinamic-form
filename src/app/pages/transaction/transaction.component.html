@@ -1,7 +1,9 @@
 <app-transaction-filter
   (changedFilter)="onChangeFilter($event)"
-  (sorted)="onChangeSort($event)"
 ></app-transaction-filter>
+<app-transaction-sorting
+  (sorted)="onChangeSort($event)"
+></app-transaction-sorting>
 <app-transaction-form></app-transaction-form>
 <h1>{{ balance$ | async }}</h1>
 <app-transaction-list

@@ -1,0 +1,7 @@
+<mat-form-field appearance="outline">
+  <mat-label>Sort By</mat-label>
+  <mat-select [ngModel]="sortBy" (ngModelChange)="onChangeSort($event)">
+    <mat-option value="date">Date</mat-option>
+    <mat-option value="amount">Amount</mat-option>
+  </mat-select>
+</mat-form-field>

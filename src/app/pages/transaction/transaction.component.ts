@@ -4,6 +4,7 @@ import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { TransactionFilterComponent } from './ui/transaction-filter/transaction-filter.component';
+import { TransactionSortingComponent } from './ui/transaction-sorting/transaction-sorting.component';
 import { TransactionFormComponent } from './ui/transaction-form/transaction-form.component';
 import { TransactionListComponent } from './ui/transaction-list/transaction-list.component';
 import { Transaction } from 'src/app/models/transaction';
@@ -15,6 +16,7 @@ import { TransactionService } from './data-access/transaction.service';
   imports: [
     CommonModule,
     TransactionFilterComponent,
+    TransactionSortingComponent,
     TransactionListComponent,
     TransactionFormComponent,
   ],
